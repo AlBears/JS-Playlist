@@ -1,3 +1,5 @@
 node_modules/
 build/server.js
 build/server.js.map
+npm-debug.log
+npm-debug.log.3741966088
