@@ -22,40 +22,39 @@ function createConfig(isDebug){
 
   		cssLoader.loader = ExtractTextPlugin.extract("style", "css");
   		sassLoader.loader = ExtractTextPlugin.extract("style", "css!sass");
-  	// } else {
-  	// 	plugins.push(new webpack.HotModuleReplacementPlugin());
-  	// 	appEntry.splice(0, 0, "webpack-hot-middleware/client");
-  	// }
-}
+  	} else {
+  		plugins.push(new webpack.HotModuleReplacementPlugin());
+  		appEntry.splice(0, 0, "webpack-hot-middleware/client");
+  	}
 //-----------------------
 //WEBPACK CONGIG
-return {
-   devtool: devTool,
-   entry: {
-     application: appEntry,
-     vendor: vendorModules
-   },
-   output: {
-     path: path.join(dirname, "public", "build"),
-     filename: "[name].js",
-     publicPath: "/build/"
-   },
-   resolve: {
-     alias: {
-       shared: path.join(dirname, "src", "shared")
-     }
-   },
-   module: {
-     loaders: [
-       { test: /\.js$/, loader: "babel", exclude: /node_modules/ },
-       { test: /\.js$/, loader: "eslint", exclude: /node_modules/ },
-       { test: /\.(png|jpg|jpeg|gif|woff|ttf|eot|svg|woff2)/, loader: "url-loader?limit=1024" },
-       cssLoader,
-       sassLoader
-     ]
-   },
-   plugins: plugins
- };
+  return {
+     devtool: devTool,
+     entry: {
+       application: appEntry,
+       vendor: vendorModules
+     },
+     output: {
+       path: path.join(dirname, "public", "build"),
+       filename: "[name].js",
+       publicPath: "/build/"
+     },
+     resolve: {
+       alias: {
+         shared: path.join(dirname, "src", "shared")
+       }
+     },
+     module: {
+       loaders: [
+         { test: /\.js$/, loader: "babel", exclude: /node_modules/ },
+         { test: /\.js$/, loader: "eslint", exclude: /node_modules/ },
+         { test: /\.(png|jpg|jpeg|gif|woff|ttf|eot|svg|woff2)/, loader: "url-loader?limit=1024" },
+         cssLoader,
+         sassLoader
+       ]
+     },
+     plugins: plugins
+   };
  //-----------------------
 }
 
