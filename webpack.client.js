@@ -4,7 +4,9 @@ var path = require("path"),
 
 const vendorModules = [
 	"jquery",
-  "lodash"
+  "lodash",
+  "socket.io-client",
+  "rxjs"
 	];
 
 const dirname = path.resolve("./");
