@@ -4,6 +4,9 @@ import express from 'express';
 import http from 'http';
 import socketIo from 'socket.io';
 import chalk from "chalk";
+import { Observable } from "rxjs";
+
+import { ObservableSocket } from 'shared/observable-socket';
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -65,12 +68,10 @@ app.get("/", (req, res) => {
 io.on("connection", socket => {
   console.log(`Got connection from ${socket.request.connection.remoteAddress}`);
 
-	let index = 0;
-	setInterval(() => {
-		socket.emit('test', `on index ${index}`);
-		index++;
-	}, 1000);
-
+	const client = new ObservableSocket(socket);
+	client.onAction("login", creds => {
+		return Observable.of({ username: creds.username });
+	});
 });
 
 //--------------------------------
