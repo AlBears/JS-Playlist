@@ -1,4 +1,19 @@
-import { Observable, ReplaySubject } from "rxjs";
+import {Observable, ReplaySubject} from "rxjs";
+
+export function clientMessage(message) {
+	const error = new Error(message);
+	error.clientMessage = message;
+	return error;
+}
+
+export function fail(message) {
+	return Observable.throw({clientMessage: message});
+}
+
+let successObservable = Observable.empty();
+export function success() {
+	return successObservable;
+}
 
 export class ObservableSocket {
 	get isConnected() { return this._state.isConnected; }
@@ -21,11 +36,10 @@ export class ObservableSocket {
 			.refCount();
 
 		this.status$.subscribe(state => this._state = state);
-
 	}
 
-	//----------------
-	// Basic wrappers
+	// -----------------
+	// Basic Wrappers
 	on$(event) {
 		return Observable.fromEvent(this._socket, event);
 	}
@@ -41,8 +55,9 @@ export class ObservableSocket {
 	emit(event, arg) {
 		this._socket.emit(event, arg);
 	}
-	//----------------
-	// Emit (Client side)
+
+	// -----------------
+	// Emit (Client Side)
 	emitAction$(action, arg) {
 		const id = this._nextRequestId++;
 		this._registerCallbacks(action);
@@ -57,7 +72,7 @@ export class ObservableSocket {
 			return;
 
 		this._socket.on(action, (arg, id) => {
-			const request = this._popRequests(id);
+			const request = this._popRequest(id);
 			if (!request)
 				return;
 
@@ -66,7 +81,7 @@ export class ObservableSocket {
 		});
 
 		this._socket.on(`${action}:fail`, (arg, id) => {
-			const request = this._popRequests(id);
+			const request = this._popRequest(id);
 			if (!request)
 				return;
 
@@ -76,9 +91,9 @@ export class ObservableSocket {
 		this._actionCallbacks[action] = true;
 	}
 
-	_popRequests(id) {
+	_popRequest(id) {
 		if (!this._requests.hasOwnProperty(id)) {
-			console.error(`Event with id ${id} was returned twice, or the server did not send back ID`);
+			console.error(`Event with id ${id} was returned twice, or the server did not send back an ID!`);
 			return;
 		}
 
@@ -87,20 +102,63 @@ export class ObservableSocket {
 		return request;
 	}
 
-	//----------------
-	// On (server side)
-	onAction(action) {
-		this._socket.on(action, (...args) => {
-			console.log(args);
+	// -----------------
+	// On (Server Side)
+	onAction(action, callback) {
+		this._socket.on(action, (arg, requestId) => {
+			try {
+				const value = callback(arg);
+				if (!value) {
+					this._socket.emit(action, null, requestId);
+					return;
+				}
+
+				if (typeof(value.subscribe) !== "function") {
+					this._socket.emit(action, value, requestId);
+					return;
+				}
+
+				let hasValue = false;
+				value.subscribe({
+					next: (item) => {
+						if (hasValue)
+							throw new Error(`Action ${action} produced more than one value.`);
+
+						this._socket.emit(action, item, requestId);
+						hasValue = true;
+					},
+
+					error: (error) => {
+						this._emitError(action, requestId, error);
+						console.error(error.stack || error);
+					},
+
+					complete: () => {
+						if (!hasValue)
+							this._socket.emit(action, null, requestId);
+					}
+				});
+			}
+			catch (error) {
+				if (typeof(requestId) !== "undefined")
+					this._emitError(action, requestId, error);
+
+				console.error(error.stack || error);
+			}
 		});
 	}
 
+	onActions(actions) {
+		for (let action in actions) {
+			if (!actions.hasOwnProperty(action))
+				continue;
 
+			this.onAction(action, actions[action]);
+		}
+	}
 
-
-
-
-
-
-
+	_emitError(action, id, error) {
+		const message = (error && error.clientMessage) || "Fatal Error";
+		this._socket.emit(`${action}:fail`, {message}, id);
+	}
 }
