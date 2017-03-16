@@ -12,7 +12,7 @@ class PlayerComponent extends ElementComponent {
 		const $title = this._$mount.find("h1");
 		$title.text("Player!");
 
-		this.$element.append('<h1>He</h1>');
+		this.$element.append('<h1>Heyyyyy</h1>');
 	}
 }
 

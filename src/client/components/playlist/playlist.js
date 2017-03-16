@@ -35,6 +35,10 @@ class PlaylistComponent extends ComponentBase {
 		this.children.push(toolbar, list, contextMenu, chrome);
 
 	}
+
+	_onDetach() {
+		this._$chrome.remove();
+	}
 }
 
 let component;
