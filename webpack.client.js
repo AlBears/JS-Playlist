@@ -12,8 +12,7 @@ const vendorModules = [
 const dirname = path.resolve("./");
 function createConfig(isDebug){
 	const devTool = isDebug ? 'eval-source-map' : 'source-map';
-	const plugins = [];
-	//const plugins = [new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.js")];
+	const plugins = [new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.js")];
 
 	const cssLoader = {test: /\.css$/, loader: "style!css"};
 	const sassLoader = {test: /\.scss$/, loader: "style!css!sass"};
@@ -35,7 +34,7 @@ function createConfig(isDebug){
 		devtool: devTool,
 		entry: {
 			application: appEntry,
-			//vendor: vendorModules
+			vendor: vendorModules
 		},
 		output: {
 			path: path.join(dirname, "public", "build"),

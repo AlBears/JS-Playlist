@@ -4,9 +4,13 @@ import express from 'express';
 import http from 'http';
 import socketIo from 'socket.io';
 import chalk from "chalk";
-import { Observable } from "rxjs";
+import { Observable } from 'rxjs';
 
 import { ObservableSocket } from "../shared/observable-socket";
+
+import { UsersModule } from './modules/users';
+import { PlaylistModule } from './modules/playlist';
+import { ChatModule } from './modules/chat';
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -43,7 +47,7 @@ if (process.env.USE_WEBPACK === "true") {
 	}));
 
 	app.use(webpackHotMiddlware(compiler));
-	console.log(chalk.bgRed("Using WebPack Dev Middleware! THIS IS FOR DEV ONLY!"));
+	console.log(chalk.bgYellow("Using WebPack Dev Middleware! THIS IS FOR DEV ONLY!"));
 }
 
 //--------------------------------
@@ -58,29 +62,48 @@ app.get("/", (req, res) => {
 		useExternalStyles
 	});
 });
+//--------------------------------
+// Services
+const videoServices = [];
+const playlistRepository = {};
 
 //--------------------------------
 // Modules
+const users = new UsersModule(io);
+const chat = new ChatModule(io, users);
+const playlist = new PlaylistModule(io, users, playlistRepository, videoServices);
+const modules = [ users, chat, playlist ];
 
 //--------------------------------
 // Socket
 
 io.on("connection", socket => {
-  console.log(`Got connection from ${socket.request.connection.remoteAddress}`);
+	console.log(`Got connection from ${socket.request.connection.remoteAddress}`);
 
 	const client = new ObservableSocket(socket);
-	client.onAction("login", creds => {
-		return Observable.of(`USER: ${creds.username}`).delay(3000);
-	});
+	for (let mod of modules)
+		mod.registerClient(client);
+
+	for (let mod of modules)
+		mod.clientRegistered(client);
 });
 
 //--------------------------------
 // Startup
 const port = process.env.PORT || 3000;
 function startServer() {
-  server.listen(port, () => {
-    console.log(`Started http server on ${port}`);
-  });
+	server.listen(port, () => {
+		console.log(`Started http server on ${port}`);
+	});
 }
 
-startServer();
+Observable.merge(...modules.map(m => m.init$()))
+	.subscribe({
+		complete() {
+			startServer();
+		},
+
+		error(error) {
+			console.error(`Could not init module: ${error.stack || error}`);
+		}
+	});
