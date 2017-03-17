@@ -25,5 +25,6 @@ require("./components/playlist/playlist");
 // Bootstrap
 services.socket.connect();
 
-services.server.emitAction$("users:list")
-	.subscribe(users => console.log(users));
+services.usersStore.state$.subscribe(state => {
+	console.log(state);
+});
