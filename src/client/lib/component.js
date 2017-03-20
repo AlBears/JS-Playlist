@@ -3,7 +3,7 @@ import $ from "jquery";
 import { Observable } from 'rxjs';
 
 Observable.prototype.compSubscribe = function(component, ...args) {
-	let subscription = this.subscribe(...args);
+	let subscription = this.safeSubscribe(...args);
 	component._onDetachHandlers.push(() => subscription.unsubscribe());
 	return subscription;
 };

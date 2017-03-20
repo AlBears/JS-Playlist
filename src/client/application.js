@@ -1,3 +1,5 @@
+import 'shared/operators';
+
 import "./application.scss";
 
 import * as services from "./services";
