@@ -5,9 +5,10 @@ import { Observable } from 'rxjs';
 import {ElementComponent} from "../../lib/component";
 
 export class ChatFormComponent extends ElementComponent {
-	constructor(usersStore) {
+	constructor(usersStore, chatStore) {
 		super('div');
 		this._users = usersStore;
+		this._chat = chatStore;
 		this.$element.addClass('chat-form');
 	}
 
@@ -42,8 +43,9 @@ export class ChatFormComponent extends ElementComponent {
 			});
 	}
 
-	_sendMessage$() {
-		return Observable.empty();
+	_sendMessage$(message) {
+		return this._chat.sendMessage$(message).catchWrap()
+			.do(() => this._$input.val(""));
 	}
 
 	_login$(username) {
