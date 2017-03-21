@@ -35,6 +35,13 @@ export class UsersStore {
 		// Bootstrap
 		this._server.on("connect", () => {
 			this._server.emit("users:list");
+
+			if (!this.isLoggedIn)
+				return;
+
+			this.login$(this._currentUser.name).subscribe(
+				user => console.log(`Logged in again as ${user.name}`),
+				error => alert(`Could not log back in ${error.message || "Unknown Error"}`));
 		});
 	}
 

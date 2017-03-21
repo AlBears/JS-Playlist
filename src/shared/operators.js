@@ -14,3 +14,7 @@ Observable.prototype.safeSubscribe = function(next, error, complete) {
 		complete);
 	return subscription;
 };
+
+Observable.prototype.catchWrap = function() {
+	return this.catch(error => Observable.of({error}));
+};
