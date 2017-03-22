@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import 'moment-duration-format';
 
 import 'shared/operators';
 

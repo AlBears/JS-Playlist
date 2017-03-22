@@ -6,7 +6,9 @@ const vendorModules = [
 	"jquery",
 	"lodash",
 	"socket.io-client",
-	"rxjs"
+	"rxjs",
+	"moment",
+	"moment-duration-format"
 ];
 
 const dirname = path.resolve("./");
