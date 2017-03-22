@@ -1,3 +1,84 @@
-h1 {
-  
+@import "../../styles/variables";
+
+section.chat {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: $background;
+
+  ul.chat-messages {
+    align-self: stretch;
+    flex-grow: 1;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-y: auto;
+    position: relative;
+    z-index: 1;
+
+    > li {
+      display: flex;
+      border-top: 1px solid $background;
+
+      &.server-status {
+        color: darken($color, 10%);
+        font-size: 8pt;
+      }
+
+      &.user-action {
+        color: $color-information;
+        opacity: .8;
+        font-style: italic;
+      }
+
+      .message {
+        flex-grow: 1;
+        padding: 5px;
+      }
+
+      .author, time {
+        flex-shrink: 0;
+        padding: 5px;
+      }
+
+      .author {
+        width: 100px;
+        text-align: right;
+        background: darken($background, 2%);
+        border-right: 1px solid $background;
+      }
+
+      time {
+        color: darken($color, 10%);
+        font-size: 7pt;
+        align-self: center;
+      }
+    }
+  }
+
+  .chat-form {
+    position: relative;
+
+    .chat-error {
+      opacity: .8;
+      background: $background;
+      color: $color-danger;
+    }
+
+    input {
+      outline: none;
+      box-sizing: border-box;
+      background: $background;
+      padding: 10px;
+      border: none;
+      border-top: 5px solid $border-panel;
+      width: 100%;
+      color: #fff;
+
+      &:active, &:focus {
+        background: darken($background, 3%);
+      }
+    }
+  }
 }
