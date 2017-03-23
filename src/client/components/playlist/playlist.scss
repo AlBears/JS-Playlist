@@ -1,3 +1,114 @@
-h1 {
+@import '../../styles/variables';
+
+section.playlist {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  .chrome {
+    overflow: hidden;
+    flex-grow: 1;
+    display: flex;
+    position: relative;
+
+    > .scroll-area {
+      position: relative;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: scroll;
+    }
+  }
+}
+
+//--------------------------
+// Playlist Items
+
+@mixin thumbnail-size($width) {
+  $thumb-aspect: .75;
+  width: $width;
+  height: $thumb-aspect * $width;
+}
+
+html section.playlist .playlist-list > li:hover {
+  background: $border-panel;
   
+  > .inner {
+      img {
+        @include thumbnail-size(60px);
+        top: -5px;
+        left: -5px;
+        opacity: 1;
+        border: none;
+      }
+
+      .details {
+        margin-left: 20px;
+      }
+  }
+}
+
+section.playlist .playlist-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex-grow: 1;
+  min-height: 100%;
+
+  > li {
+    transition:
+      background 250ms linear,
+      color 250ms linear,
+      box-shadow 100ms linear,
+      transform 500ms;
+
+    padding: 0;
+    cursor: default;
+    display: inline-block;
+    width: 100%;
+
+    > .inner {
+      margin: 5px;
+      padding-bottom: 5px;
+      position: relative;
+      display: flex;
+
+      .thumb-wrapper {
+        @include thumbnail-size(30px);
+        margin-right: 10px;
+        position: relative;
+        flex-grow: 0;
+        flex-shrink: 0;
+
+        img {
+          @include thumbnail-size(30px);
+          position: absolute;
+          top: 0;
+          left: 0;
+          border: 2px solid $background;
+          opacity: .5;
+          display: block;
+        }
+      }
+
+      .details {
+        align-self: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        transition: margin-left 250ms;
+
+        time {
+          display: block;
+          font-size: 7pt;
+          color: darken($color, 20%);
+          padding-top: 4px;
+        }
+      }
+
+      .progress {
+        display: none;
+      }
+    }
+  }
 }
