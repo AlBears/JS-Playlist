@@ -5,6 +5,10 @@ section.playlist {
   flex-direction: column;
   position: relative;
 
+  > h1 {
+    border: none;
+  }
+
   .chrome {
     overflow: hidden;
     flex-grow: 1;
@@ -21,6 +25,33 @@ section.playlist {
   }
 }
 
+//---------------------------
+// Toolbar
+html.not-logged-in section.playlist .toolbar {
+  display: none;
+}
+
+section.playlist .toolbar {
+  padding-bottom: 5px;
+  background: $border-panel;
+  flex-grow: 0;
+  flex-shrink: 0;
+  border-bottom: 2px solid darken($background, 5%);
+
+  a {
+    display: inline-block;
+    font-size: 10pt;
+    text-decoration: none;
+    padding: 2px 5px;
+    color: lighten($color-information, 10%);
+    border: darken($background, 20%);
+
+    &:hover {
+      color: $color-highlight;
+    }
+  }
+}
+
 //--------------------------
 // Playlist Items
 
@@ -32,7 +63,7 @@ section.playlist {
 
 html section.playlist .playlist-list > li:hover {
   background: $border-panel;
-  
+
   > .inner {
       img {
         @include thumbnail-size(60px);

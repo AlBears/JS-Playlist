@@ -19,6 +19,11 @@ export class PlaylistStore {
 			server.emit('playlist:list');
 		});
 	}
+
+	addSource$(url) {
+		return Observable.of({error: { message: `There was an error: ${url}` }})
+			.delay(1000);
+	}
 }
 
 function opList(sources) {
