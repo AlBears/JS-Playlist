@@ -20,7 +20,7 @@ export class PlaylistToolbarComponent extends ElementComponent {
 		Observable.fromEventNoDefault($addButton, 'click')
 			.flatMap(() => Observable.fromPrompt('Enter the url of the video'))
 			.filter(url => url && url.trim().length)
-			.flatMap(url => this._playlist.addSource$(url))
+			.flatMap(url => this._playlist.addSource$(url).catchWrap())
 			.compSubscribe(this, result => {
 				if (result && result.error)
 					alert(result.error.message || "Unknown Error");
