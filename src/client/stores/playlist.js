@@ -9,7 +9,8 @@ export class PlaylistStore {
 		this._server = server;
 
 		const events$ = Observable.merge(
-			server.on$('playlist:list').map(opList));
+			server.on$('playlist:list').map(opList),
+			server.on$('playlist:added').map(opAdd));
 
 		this.state$ = events$
 			.scan(({ state }, op) => op(state), { state: defaultState })
@@ -44,5 +45,38 @@ function opList(sources) {
 			type: 'list',
 			state
 		};
+	};
+}
+
+function opAdd({ source, afterId }) {
+	return state => {
+		let insertIndex = 0,
+			addAfter = null;
+
+		if (afterId !== -1) {
+			addAfter = state.map[afterId];
+			if (!addAfter)
+				return opError(state, `Could not add source ${source.title} after ${afterId}, as ${afterId} was not found`);
+
+			const afterIndex = state.list.indexOf(addAfter);
+			insertIndex = afterIndex + 1;
+		}
+
+		state.list.splice(insertIndex, 0, source);
+		return {
+			type: "add",
+			source,
+			addAfter,
+			state
+		};
+	};
+}
+
+function opError(state, error) {
+	console.error(error);
+	return {
+		type: "error",
+		error,
+		state
 	};
 }

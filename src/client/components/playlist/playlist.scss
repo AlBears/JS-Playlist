@@ -141,5 +141,18 @@ section.playlist .playlist-list {
         display: none;
       }
     }
+
+    &.selected {
+      position: relative;
+      z-index: 1;
+      background: lighten($border-panel, 10%);
+      color: $color-highlight;
+
+      > .inner {
+          .thumb-wrapper img {
+            opacity: 1;
+          }
+      }
+    }
   }
 }
