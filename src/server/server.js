@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 
 import 'shared/operators';
 import { ObservableSocket } from "../shared/observable-socket";
+import { KEY } from './config';
 
 import { FileRepository } from './repositories/file';
 import { YoutubeService } from './services/youtube';
@@ -68,7 +69,8 @@ app.get("/", (req, res) => {
 });
 //--------------------------------
 // Services
-const videoServices = [new YoutubeService()];
+
+const videoServices = [new YoutubeService(KEY)];
 const playlistRepository = new FileRepository('./data/playlist.json');
 
 //--------------------------------
