@@ -12,11 +12,15 @@ export class PlaylistStore {
 			server.on$('playlist:list').map(opList),
 			server.on$('playlist:added').map(opAdd));
 
-		this.state$ = events$
+		this.actions$ = events$
 			.scan(({ state }, op) => op(state), { state: defaultState })
-			.publishReplay(1);
+			.publish();
 
-		this.state$.connect();
+		this.state$ = this.actions$
+			.publishReplay(1)
+			.startWith({state: defaultState});
+
+		this.actions$.connect();
 
 		server.on('connect', () => {
 			server.emit('playlist:list');
