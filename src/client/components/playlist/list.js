@@ -26,7 +26,7 @@ export class PlaylistListComponent extends ElementComponent {
 		this.children.push(sort);
 
 		//-----------------------------------
-		//
+		// Playlist
 		Observable.merge(
 			this._playlist.state$.first(),
 			this._playlist.actions$.filter(a => a.type === "list"))
@@ -110,6 +110,14 @@ export class PlaylistListComponent extends ElementComponent {
 }
 
 class PlaylistItemComponent extends ElementComponent {
+	set isPlaying(isPlaying) {
+		this._setClass("is-playing", isPlaying);
+	}
+
+	set progress(progress) {
+		this._$progress.css("width", `${progress}%`);
+	}
+
 	constructor(source) {
 		super('li');
 		this._source = source;
@@ -119,8 +127,8 @@ class PlaylistItemComponent extends ElementComponent {
 
 		const $details =
 			$(`<div class="details" />`).append([
-				$(`<span class="title" />`).attr('title', source.title).text(source.title),
-				$(`<time />`).text(moment.duration(source.totalTime, 'seconds').format())
+				$(`<span class="title" />`).attr("title", source.title).text(source.title),
+				$(`<time />`).text(moment.duration(source.totalTime, "seconds").format())
 			]);
 
 		this._$progress = $(`<span class="progress" />`);
