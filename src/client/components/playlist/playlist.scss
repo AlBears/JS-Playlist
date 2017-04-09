@@ -54,7 +54,7 @@ section.playlist .toolbar {
 //--------------------------
 // Context Menu
 section.playlist .context-menu {
-  z-index: 100;
+  z-index: 201;
   left: 0;
   right: 0;
   box-sizing: border-box;
@@ -101,7 +101,7 @@ section.playlist .context-menu {
   height: $thumb-aspect * $width;
 }
 
-html section.playlist .playlist-list > li:hover {
+html section.playlist .playlist-list > li:hover:not(.selected) {
   background: $border-panel;
 
   > .inner {
@@ -201,8 +201,8 @@ section.playlist .playlist-list {
           content: " ";
           display: block;
           position: absolute;
-          left: 5px;
-          right: 5px;
+          left: 0px;
+          right: 0px;
           bottom: 0;
           height: 1px;
         }

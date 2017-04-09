@@ -44,6 +44,10 @@ export class PlaylistStore {
 
 		return this._server.emitAction$('playlist:add', { url });
 	}
+
+	setCurrentSource$(source) {
+		return this._server.emitAction$('playlist:set-current', { id: source.id });
+	}
 }
 
 function opList(sources) {

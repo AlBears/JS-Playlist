@@ -65,5 +65,21 @@ export class PlaylistContextMenuComponent extends ElementComponent {
 
 				this.$element.css("top", targetPosition);
 			});
+
+		const setCurrentItem$ = Observable.fromEventNoDefault($playButton, "click")
+			.map(() => comp => this._playlist.setCurrentSource$(comp.source));
+
+		const deleteItem$ = Observable.fromEventNoDefault($deleteButton, "click")
+			.map(() => comp => this._playlist.deleteItem$(comp.source));
+
+		Observable.merge(setCurrentItem$, deleteItem$)
+			.withLatestFrom(selectedItem$)
+			.flatMap(([op, item]) => op(item).catchWrap())
+			.compSubscribe(this, response => {
+				if (response && response.error)
+					alert(response.error.message || "Unknown Error");
+				else
+					selectedItemSubject$.next(null);
+			});
 	}
 }
