@@ -77,6 +77,8 @@ function opAdd({ source, afterId }) {
 		}
 
 		state.list.splice(insertIndex, 0, source);
+		state.map[source.id] = source;
+
 		return {
 			type: "add",
 			source,

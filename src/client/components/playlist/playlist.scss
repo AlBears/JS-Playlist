@@ -51,6 +51,46 @@ section.playlist .toolbar {
     }
   }
 }
+//--------------------------
+// Context Menu
+section.playlist .context-menu {
+  z-index: 100;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  display: none;
+  position: absolute;
+  background: lighten($background-panel, 10%);
+  border: 5px solid lighten($border-panel, 10%);
+
+  &.open {
+    display: block;
+  }
+
+  > a {
+		padding: 5px;
+		color: $color-highlight;
+		text-decoration: none;
+		display: flex;
+
+		i {
+			order: 1;
+			margin-left: auto;
+		}
+
+		&:hover {
+			background: $background-panel;
+		}
+
+		&.delete {
+			background: darken($color-danger, 5%);
+
+			&:hover {
+				background: darken($color-danger, 10%);
+			}
+		}
+	}
+}
 
 //--------------------------
 // Playlist Items
