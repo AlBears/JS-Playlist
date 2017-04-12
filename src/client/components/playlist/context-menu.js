@@ -70,7 +70,7 @@ export class PlaylistContextMenuComponent extends ElementComponent {
 			.map(() => comp => this._playlist.setCurrentSource$(comp.source));
 
 		const deleteItem$ = Observable.fromEventNoDefault($deleteButton, "click")
-			.map(() => comp => this._playlist.deleteItem$(comp.source));
+			.map(() => comp => this._playlist.deleteSource$(comp.source));
 
 		Observable.merge(setCurrentItem$, deleteItem$)
 			.withLatestFrom(selectedItem$)

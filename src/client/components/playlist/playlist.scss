@@ -182,6 +182,10 @@ section.playlist .playlist-list {
       }
     }
 
+    &.remove {
+      transform: translateX(-200%);
+    }
+
     &.is-playing {
       box-shadow: 0 0 5px 2px #000;
       background: darken($background-panel, 3%);

@@ -141,6 +141,28 @@ export class PlaylistModule extends ModuleBase {
 			};
 	}
 
+	deleteSourceById(id) {
+		const source = this.getSourceById(id);
+		if (!source)
+			throw new Error(`Cannot find source ${id}`);
+
+		const sourceIndex = this._playlist.indexOf(source);
+
+		if (source == this._currentSource)
+			if (this._playlist.length == 1)
+				this.setCurrentSource(null);
+			else
+				this.playNextSource();
+
+		this._playlist.splice(sourceIndex, 1);
+
+		if (this._currentSource)
+			this._currentIndex = this._playlist.indexOf(this._currentSource);
+
+		this._io.emit("playlist:removed", {id});
+		console.log(`playlist: deleted ${source.title}`);
+	}
+
 	registerClient(client) {
 		const isLoggedIn = () => this._users.getUserForClient(client) !== null;
 
@@ -169,7 +191,13 @@ export class PlaylistModule extends ModuleBase {
 					return fail(`Cannot find source ${id}`);
 
 				this.setCurrentSource(source);
+			},
 
+			'playlist:remove': ({id}) => {
+				if (!isLoggedIn())
+					return fail('You must be logged in to do that');
+
+				this.deleteSourceById(id);
 			}
 		});
 	}
