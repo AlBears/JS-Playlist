@@ -24,6 +24,21 @@ section.playlist {
     }
   }
 }
+//---------------------------
+// Chrome
+
+section.playlist .playing-indicator {
+	z-index: 200;
+	position: absolute;
+	width: 10px;
+	height: 10px;
+	background: #FFB000;
+	right: -6px;
+	margin-top: 5px;
+	top: 0;
+	pointer-events: none;
+	border-radius: 50px;
+}
 
 //---------------------------
 // Toolbar

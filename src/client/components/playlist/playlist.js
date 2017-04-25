@@ -19,7 +19,6 @@ class PlaylistComponent extends ComponentBase {
 
 	_onAttach() {
 		const $title = this._$mount.find("> h1");
-		$title.text('Playlist');
 
 		const toolbar = new PlaylistToolbarComponent(this._playlist);
 		toolbar.attach(this._$mount);
@@ -33,7 +32,7 @@ class PlaylistComponent extends ComponentBase {
 		const contextMenu = new PlaylistContextMenuComponent(this._playlist, this._users, list.$element);
 		contextMenu.attach(this._$scrollArea);
 
-		const chrome = new PlaylistChromeComponent();
+		const chrome = new PlaylistChromeComponent(this._playlist, $title);
 		chrome.attach(this._$chrome);
 
 		this.children.push(toolbar, list, contextMenu, chrome);
