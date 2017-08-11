@@ -21,7 +21,7 @@ export class PlaylistListComponent extends ElementComponent {
 		let itemsMap = {};
 		//------------------------------
 		// Child component
-		const sort = new PlaylistSortComponent();
+		const sort = new PlaylistSortComponent(this._playlist, this._users, this.$element);
 		sort.attach(this._$mount);
 		this.children.push(sort);
 

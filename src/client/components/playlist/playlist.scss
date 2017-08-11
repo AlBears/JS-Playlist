@@ -106,6 +106,37 @@ section.playlist .context-menu {
 		}
 	}
 }
+//--------------------------
+// Sorting
+section.playlist .scroll-area .placeholder {
+	background: lighten($border-panel, 20%);
+	color: $color-highlight;
+	padding: 5px;
+	font-size: 8pt;
+	position: absolute;
+	left: 0;
+	width: 100%;
+	box-sizing: border-box;
+	z-index: 200;
+	pointer-events: none;
+	display: none;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+html.sorting-playlist {
+	cursor: ns-resize !important;
+
+	section.playlist .scroll-area .placeholder {
+		display: block;
+	}
+
+	section.playlist .playlist-list > li {
+		cursor: ns-resize;
+	}
+}
+
 
 //--------------------------
 // Playlist Items
@@ -116,7 +147,13 @@ section.playlist .context-menu {
   height: $thumb-aspect * $width;
 }
 
-html section.playlist .playlist-list > li:hover:not(.selected) {
+html.logged-in section.playlist .playlist-list > li {
+	.thumb-wrapper img {
+		cursor: ns-resize;
+	}
+}
+
+html:not(.sorting-playlist) section.playlist .playlist-list > li:hover:not(.selected) {
   background: $border-panel;
 
   > .inner {
@@ -239,7 +276,7 @@ section.playlist .playlist-list {
       }
     }
 
-    &.selected {
+    &.selected, &.dragging {
       position: relative;
       z-index: 1;
       background: lighten($border-panel, 10%);
