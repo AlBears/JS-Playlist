@@ -57,6 +57,14 @@ export class PlaylistListComponent extends ElementComponent {
 				const comp = itemsMap[source.id];
 				this._removeItem(comp);
 			});
+
+		this._playlist.actions$
+			.filter(a => a.type === "move")
+			.compSubscribe(this, ({fromSource, toSource}) => {
+				const fromComp = itemsMap[fromSource.id];
+				const toComp = toSource ? itemsMap[toSource.id] : null;
+				this._moveItem(fromComp, toComp);
+			});
 		//-----------------------------------
 		// Current item
 		let lastComp = null;
@@ -121,6 +129,14 @@ export class PlaylistListComponent extends ElementComponent {
 			.animate({opacity: 0, height: 0}, 250, () => {
 				comp.detach();
 			});
+	}
+
+	_moveItem(fromComp, toComp) {
+		if (toComp) {
+			toComp.$element.after(fromComp.$element);
+		} else {
+			this.$element.prepend(fromComp.$element);
+		}
 	}
 }
 

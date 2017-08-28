@@ -1,6 +1,6 @@
-import { Observable } from 'rxjs';
+import {Observable} from "rxjs";
 
-import { validateAddSource } from 'shared/validation/playlist';
+import {validateAddSource} from "shared/validation/playlist";
 
 export class PlaylistStore {
 	constructor(server) {
@@ -9,18 +9,19 @@ export class PlaylistStore {
 		this._server = server;
 
 		const events$ = Observable.merge(
-			server.on$('playlist:list').map(opList),
-			server.on$('playlist:added').map(opAdd),
-			server.on$('playlist:current').map(opCurrent),
-			server.on$('playlist:removed').map(opRemove));
+			server.on$("playlist:list").map(opList),
+			server.on$("playlist:added").map(opAdd),
+			server.on$("playlist:current").map(opCurrent),
+			server.on$("playlist:removed").map(opRemove),
+			server.on$("playlist:moved").map(opMove));
 
 		this.actions$ = events$
-			.scan(({ state }, op) => op(state), { state: defaultState })
+			.scan(({state}, op) => op(state), { state: defaultState })
 			.publish();
 
 		const publishedState$ = this.actions$.publishReplay(1);
 		this.state$ = publishedState$
-			.startWith({state: defaultState});
+			.startWith({ state: defaultState });
 
 		this.serverTime$ = this.actions$
 			.filter(a => a.type == "current")
@@ -31,8 +32,8 @@ export class PlaylistStore {
 		this.serverTime$.connect();
 		publishedState$.connect();
 
-		server.on('connect', () => {
-			server.emitAction$('playlist:list')
+		server.on("connect", () => {
+			server.emitAction$("playlist:list")
 				.subscribe(() => {
 					server.emit("playlist:current");
 				});
@@ -44,15 +45,22 @@ export class PlaylistStore {
 		if (!validator.isValid)
 			return Observable.throw({ message: validator.message });
 
-		return this._server.emitAction$('playlist:add', { url });
+		return this._server.emitAction$("playlist:add", { url });
 	}
 
 	setCurrentSource$(source) {
-		return this._server.emitAction$('playlist:set-current', { id: source.id });
+		return this._server.emitAction$("playlist:set-current", { id: source.id });
 	}
 
 	deleteSource$(source) {
-		return this._server.emitAction$('playlist:remove', { id: source.id });
+		return this._server.emitAction$("playlist:remove", { id: source.id });
+	}
+
+	moveSource$(fromId, toId) {
+		if (fromId == toId)
+			return Observable.empty();
+
+		return this._server.emitAction$("playlist:move", {fromId, toId});
 	}
 }
 
@@ -66,13 +74,13 @@ function opList(sources) {
 		}, {});
 
 		return {
-			type: 'list',
-			state
+			type: "list",
+			state: state
 		};
 	};
 }
 
-function opAdd({ source, afterId }) {
+function opAdd({source, afterId}) {
 	return state => {
 		let insertIndex = 0,
 			addAfter = null;
@@ -91,9 +99,9 @@ function opAdd({ source, afterId }) {
 
 		return {
 			type: "add",
-			source,
-			addAfter,
-			state
+			source: source,
+			addAfter: addAfter,
+			state: state
 		};
 	};
 }
@@ -109,8 +117,8 @@ function opCurrent({id, time}) {
 
 			if (!state.current || state.current.source != source) {
 				state.current = {
-					source,
-					time,
+					source: source,
+					time: time,
 					progress: calculateProgress(time, source)
 				};
 			} else {
@@ -121,7 +129,7 @@ function opCurrent({id, time}) {
 
 		return {
 			type: "current",
-			state
+			state: state
 		};
 	};
 }
@@ -130,7 +138,7 @@ function opRemove({id}) {
 	return state => {
 		const source = state.map[id];
 		if (!source)
-			return opError(state, `Could not remove source with ${id}, as it was not found`);
+			return opError(state, `Could not remove source with id ${id}, as it was not found`);
 
 		const index = state.list.indexOf(source);
 		state.list.splice(index, 1);
@@ -138,8 +146,36 @@ function opRemove({id}) {
 
 		return {
 			type: "remove",
-			source,
-			state
+			source: source,
+			state: state
+		};
+	};
+}
+
+function opMove({fromId, toId}) {
+	return state => {
+		const fromSource = state.map[fromId];
+		if (!fromSource)
+			return opError(state, `Could not move source, from item ${fromId} not found`);
+
+		let toSource = null;
+		if (toId) {
+			toSource = state.map[toId];
+			if (!toSource)
+				return opError(state, `Could not move source, to item ${toId} not found`);
+		}
+
+		const fromIndex = state.list.indexOf(fromSource);
+		state.list.splice(fromIndex, 1);
+
+		const toIndex = toSource ? state.list.indexOf(toSource) + 1 : 0;
+		state.list.splice(toIndex, 0, fromSource);
+
+		return {
+			type: "move",
+			fromSource: fromSource,
+			toSource: toSource,
+			state: state
 		};
 	};
 }
@@ -148,8 +184,8 @@ function opError(state, error) {
 	console.error(error);
 	return {
 		type: "error",
-		error,
-		state
+		error: error,
+		state: state
 	};
 }
 

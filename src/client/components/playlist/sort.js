@@ -66,8 +66,8 @@ export class PlaylistSortComponent extends ComponentBase {
 						$fromElement.removeClass("dragging");
 						this._$html.removeClass("sorting-playlist");
 					});
-			});
-			//.flatMap(({from, to}) => this._playlist.moveSource$(from.source.id, to && to.source.id).catchWrap());
+			})
+			.flatMap(({from, to}) => this._playlist.moveSource$(from.source.id, to && to.source.id).catchWrap());
 
 		sortOperations$.compSubscribe(this, result => {
 			if (result && result.error)
